@@ -1,0 +1,49 @@
+name: 'Weekly TF Project Options'
+
+on:
+  workflow_dispatch:
+    inputs:
+      tf_option:
+        type: choice
+        description: Elecciones para ejecutar en el ejercicio semanal
+        options: 
+        - plan
+        - apply
+        - destroy
+        
+jobs:
+  terraform:
+    name: 'Terraform'
+    env:
+      ARM_CLIENT_ID: ${{ secrets.WEEKLY_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.WEEKLY_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.WEEKLY_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.WEEKLY_TENANT_ID }}
+      TF_VERSION: 1.5.7
+   
+    runs-on: ubuntu-latest
+ 
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - uses: hashicorp/setup-terraform@v3
+
+    - name: Terraform Init
+      id: init
+      run: terraform -chdir=soluciones/workload init
+
+    - name: Terraform Plan
+      if: "${{ github.event.inputs.tf_option == 'plan' }}"    
+      run: terraform -chdir=soluciones/workload plan
+
+    - name: Terraform Apply
+      if: "${{ github.event.inputs.tf_option == 'apply' }}"    
+      run: terraform -chdir=soluciones/workload apply -auto-approve
+
+    - name: Terraform Destroy
+      if: "${{ github.event.inputs.tf_option == 'destroy' }}"    
+      run: terraform -chdir=soluciones/workload destroy -auto-approve
