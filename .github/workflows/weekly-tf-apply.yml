@@ -1,0 +1,39 @@
+name: 'Weekly TF Project Apply'
+
+on:
+  push:
+    branches: [main]
+    
+jobs:
+  terraform:
+    name: 'Terraform'
+    env:
+      ARM_CLIENT_ID: ${{ secrets.WEEKLY_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.WEEKLY_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.WEEKLY_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.WEEKLY_TENANT_ID }}
+      TF_VERSION: 1.5.7
+    runs-on: ubuntu-latest
+    environment: production
+ 
+    defaults:
+      run:
+        shell: bash
+ 
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+         
+    - name: 'Terraform Init'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: ${{ env.TF_VERSION }}
+        tf_actions_subcommand: 'init'
+        tf_actions_working_dir: "./soluciones/workload"
+
+    - name: 'Terraform Apply'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: ${{ env.TF_VERSION }}
+        tf_actions_subcommand: 'apply'
+        tf_actions_working_dir: "./soluciones/workload"
