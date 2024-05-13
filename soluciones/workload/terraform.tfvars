@@ -2,7 +2,7 @@ azure_infrastructure = {
   load_balancer_name = "lb-weekly"
   
   resource_group = {
-    name     = "---"
+    name     = "rg1icasado-lab01"
     location = "westeurope"
   }
   
